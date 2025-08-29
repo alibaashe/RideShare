@@ -5,7 +5,7 @@ export default function Login() {
   const [, setLocation] = useLocation();
 
   const handleLoginSuccess = () => {
-    setLocation("/");
+    setLocation("/home");
   };
 
   return <LoginForm onLoginSuccess={handleLoginSuccess} />;

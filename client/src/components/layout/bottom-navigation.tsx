@@ -10,7 +10,7 @@ export default function BottomNavigation({ currentPage }: BottomNavigationProps)
   const [location] = useLocation();
 
   const navItems = [
-    { id: "home", path: "/", label: "Home", icon: Home },
+    { id: "home", path: "/home", label: "Home", icon: Home },
     { id: "history", path: "/history", label: "History", icon: History },
     { id: "help", path: "/help", label: "Help", icon: HelpCircle },
     { id: "profile", path: "/profile", label: "Profile", icon: User },
