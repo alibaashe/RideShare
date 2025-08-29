@@ -8,5 +8,14 @@ export default function Login() {
     setLocation("/home");
   };
 
-  return <LoginForm onLoginSuccess={handleLoginSuccess} />;
+  const handleSwitchToRegister = () => {
+    setLocation("/register");
+  };
+
+  return (
+    <LoginForm 
+      onLoginSuccess={handleLoginSuccess}
+      onSwitchToRegister={handleSwitchToRegister}
+    />
+  );
 }

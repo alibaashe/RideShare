@@ -8,6 +8,7 @@ import History from "@/pages/history";
 import Help from "@/pages/help";
 import Profile from "@/pages/profile";
 import Login from "@/pages/login";
+import Register from "@/pages/register";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/" component={Login} />
       <Route path="/home" component={Home} />
       <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
       <Route path="/history" component={History} />
       <Route path="/help" component={Help} />
       <Route path="/profile" component={Profile} />
