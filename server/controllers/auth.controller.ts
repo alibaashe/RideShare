@@ -4,7 +4,9 @@ import { storage } from "../storage";
 import { requireAuth, optionalAuth, getCurrentUser } from "../middleware/auth";
 import { validateBody } from "../middleware/validation";
 import { insertUserSchema } from "@shared/schema";
+import { normalizeSomaliPhoneNumber } from "@shared/utils";
 import { z } from "zod";
+import bcrypt from 'bcrypt';
 
 export function setupAuthRoutes(app: Express) {
   // Authentication routes
@@ -36,44 +38,28 @@ export function setupAuthRoutes(app: Express) {
       phoneNumber: z.string().regex(/^(?:\+252|252|0)?[1-9][0-9]{7,8}$/, "Please enter a valid Somalia phone number"),
       password: z.string().min(1, "Password is required")
     })),
-    async (req, res) => {
-      try {
-        let { phoneNumber, password } = req.body;
-        
-        // Normalize Somalia phone number to +252 format
-        if (phoneNumber.startsWith('0')) {
-          phoneNumber = '+252' + phoneNumber.substring(1);
-        } else if (phoneNumber.startsWith('252')) {
-          phoneNumber = '+' + phoneNumber;
-        } else if (!phoneNumber.startsWith('+252')) {
-          phoneNumber = '+252' + phoneNumber;
-        }
+    (req, res, next) => {
+      // We need to normalize the phone number before passing it to passport
+      req.body.phoneNumber = normalizeSomaliPhoneNumber(req.body.phoneNumber); // Update the request body for passport
 
-        // Find user by phone number instead of username
-        const user = await storage.getUserByPhoneNumber(phoneNumber);
+      passport.authenticate('local', (err: Error, user: any, info: any) => {
+        if (err) {
+          return next(err);
+        }
         if (!user) {
-          return res.status(401).json({ message: "Invalid phone number or password" });
+          return res.status(401).json({ message: info.message || 'Login failed' });
         }
-
-        // Verify password
-        const bcrypt = require('bcrypt');
-        const isValidPassword = await bcrypt.compare(password, user.password);
-        if (!isValidPassword) {
-          return res.status(401).json({ message: "Invalid phone number or password" });
-        }
-
-        // Create session (manual session management since we're not using passport for this)
-        (req.session as any).userId = user.id;
-        
-        const { password: _, ...userWithoutPassword } = user;
-        res.json({ 
-          message: "Login successful", 
-          user: userWithoutPassword 
+        req.logIn(user, (err) => {
+          if (err) {
+            return next(err);
+          }
+          const { password, ...userWithoutPassword } = user;
+          return res.json({
+            message: "Login successful",
+            user: userWithoutPassword,
+          });
         });
-      } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ message: "Login failed" });
-      }
+      })(req, res, next);
     }
   );
 

@@ -52,19 +52,19 @@ app.use(session({
 // Passport configuration
 passport.use(new LocalStrategy(
   {
-    usernameField: 'username',
+    usernameField: 'phoneNumber',
     passwordField: 'password'
   },
-  async (username: string, password: string, done) => {
+  async (phoneNumber: string, password: string, done) => {
     try {
-      const user = await storage.getUserByUsername(username);
+      const user = await storage.getUserByPhoneNumber(phoneNumber);
       if (!user) {
-        return done(null, false, { message: 'Invalid username or password' });
+        return done(null, false, { message: 'Invalid phone number or password' });
       }
       
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) {
-        return done(null, false, { message: 'Invalid username or password' });
+        return done(null, false, { message: 'Invalid phone number or password' });
       }
       
       return done(null, user);

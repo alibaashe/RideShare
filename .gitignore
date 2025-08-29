@@ -70,3 +70,8 @@ temp/
 replit.nix
 .config/
 .upm/
+
+# Testing artifacts
+cookies.txt
+prod_app.log
+app.log

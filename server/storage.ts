@@ -338,9 +338,11 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
+    const hashedPassword = await bcrypt.hash(insertUser.password, 10);
     const user: User = {
       ...insertUser,
       id,
+      password: hashedPassword,
       pointsBalance: insertUser.pointsBalance || "0.00",
       isVerified: insertUser.isVerified || false,
       createdAt: new Date(),

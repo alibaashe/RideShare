@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { normalizeSomaliPhoneNumber } from "@shared/utils";
 import { Phone, Lock, User } from "lucide-react";
 
 interface RegisterFormProps {
@@ -94,25 +95,8 @@ export default function RegisterForm({ onRegisterSuccess, onSwitchToLogin }: Reg
     registerMutation.mutate({ username, phoneNumber, password });
   };
 
-  const formatPhoneNumber = (value: string) => {
-    // Remove all non-numeric characters
-    const cleaned = value.replace(/\D/g, '');
-    
-    // Format as Somalia number
-    if (cleaned.startsWith('252')) {
-      return '+' + cleaned;
-    } else if (cleaned.startsWith('0')) {
-      return '+252' + cleaned.substring(1);
-    } else if (cleaned.length > 0 && !cleaned.startsWith('252')) {
-      return '+252' + cleaned;
-    }
-    
-    return cleaned;
-  };
-
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatPhoneNumber(e.target.value);
-    setPhoneNumber(formatted);
+    setPhoneNumber(normalizeSomaliPhoneNumber(e.target.value));
   };
 
   return (
