@@ -1,5 +1,9 @@
+import { eq, desc } from 'drizzle-orm';
+import { db } from './database';
+import { users, services, bookings, rides } from '@shared/schema';
 import { type User, type InsertUser, type Service, type InsertService, type Booking, type InsertBooking, type Ride, type InsertRide } from "@shared/schema";
 import { randomUUID } from "crypto";
+import bcrypt from 'bcrypt';
 
 export interface IStorage {
   // Users
@@ -22,6 +26,156 @@ export interface IStorage {
   // Rides
   createRide(ride: InsertRide): Promise<Ride>;
   getUserRides(userId: string): Promise<Ride[]>;
+}
+
+export class DatabaseStorage implements IStorage {
+  async getUser(id: string): Promise<User | undefined> {
+    try {
+      const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+      return result[0];
+    } catch (error) {
+      console.error('Error getting user:', error);
+      throw new Error('Failed to get user');
+    }
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    try {
+      const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+      return result[0];
+    } catch (error) {
+      console.error('Error getting user by username:', error);
+      throw new Error('Failed to get user');
+    }
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    try {
+      // Hash password before storing
+      const hashedPassword = await bcrypt.hash(insertUser.password, 10);
+      
+      const result = await db.insert(users).values({
+        ...insertUser,
+        password: hashedPassword,
+        pointsBalance: insertUser.pointsBalance || "0.00",
+        isVerified: insertUser.isVerified || false,
+      }).returning();
+      
+      return result[0];
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw new Error('Failed to create user');
+    }
+  }
+
+  async updateUserPoints(userId: string, points: string): Promise<User | undefined> {
+    try {
+      const result = await db.update(users)
+        .set({ pointsBalance: points })
+        .where(eq(users.id, userId))
+        .returning();
+      
+      return result[0];
+    } catch (error) {
+      console.error('Error updating user points:', error);
+      throw new Error('Failed to update user points');
+    }
+  }
+
+  async getAllServices(): Promise<Service[]> {
+    try {
+      return await db.select().from(services).where(eq(services.isActive, true));
+    } catch (error) {
+      console.error('Error getting services:', error);
+      throw new Error('Failed to get services');
+    }
+  }
+
+  async getService(id: string): Promise<Service | undefined> {
+    try {
+      const result = await db.select().from(services).where(eq(services.id, id)).limit(1);
+      return result[0];
+    } catch (error) {
+      console.error('Error getting service:', error);
+      throw new Error('Failed to get service');
+    }
+  }
+
+  async createService(insertService: InsertService): Promise<Service> {
+    try {
+      const result = await db.insert(services).values(insertService).returning();
+      return result[0];
+    } catch (error) {
+      console.error('Error creating service:', error);
+      throw new Error('Failed to create service');
+    }
+  }
+
+  async createBooking(insertBooking: InsertBooking): Promise<Booking> {
+    try {
+      const result = await db.insert(bookings).values(insertBooking).returning();
+      return result[0];
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      throw new Error('Failed to create booking');
+    }
+  }
+
+  async getUserBookings(userId: string): Promise<Booking[]> {
+    try {
+      return await db.select().from(bookings)
+        .where(eq(bookings.userId, userId))
+        .orderBy(desc(bookings.createdAt));
+    } catch (error) {
+      console.error('Error getting user bookings:', error);
+      throw new Error('Failed to get bookings');
+    }
+  }
+
+  async getBooking(id: string): Promise<Booking | undefined> {
+    try {
+      const result = await db.select().from(bookings).where(eq(bookings.id, id)).limit(1);
+      return result[0];
+    } catch (error) {
+      console.error('Error getting booking:', error);
+      throw new Error('Failed to get booking');
+    }
+  }
+
+  async updateBookingStatus(id: string, status: string): Promise<Booking | undefined> {
+    try {
+      const result = await db.update(bookings)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(bookings.id, id))
+        .returning();
+      
+      return result[0];
+    } catch (error) {
+      console.error('Error updating booking status:', error);
+      throw new Error('Failed to update booking');
+    }
+  }
+
+  async createRide(insertRide: InsertRide): Promise<Ride> {
+    try {
+      const result = await db.insert(rides).values(insertRide).returning();
+      return result[0];
+    } catch (error) {
+      console.error('Error creating ride:', error);
+      throw new Error('Failed to create ride');
+    }
+  }
+
+  async getUserRides(userId: string): Promise<Ride[]> {
+    try {
+      return await db.select().from(rides)
+        .where(eq(rides.userId, userId))
+        .orderBy(desc(rides.date));
+    } catch (error) {
+      console.error('Error getting user rides:', error);
+      throw new Error('Failed to get rides');
+    }
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -255,4 +409,5 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Use database storage if DATABASE_URL is available, otherwise fallback to memory storage
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();
