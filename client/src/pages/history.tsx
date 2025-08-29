@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import Header from "@/components/header";
-import BottomNavigation from "@/components/bottom-navigation";
+import { Header, BottomNavigation } from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Booking } from "@shared/schema";

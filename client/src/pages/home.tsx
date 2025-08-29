@@ -1,11 +1,9 @@
 import { useState } from "react";
-import Header from "@/components/header";
-import PointsBalanceCard from "@/components/points-balance-card";
-import ServicesGrid from "@/components/services-grid";
-import PromotionCard from "@/components/promotion-card";
-import RecentRides from "@/components/recent-rides";
-import BottomNavigation from "@/components/bottom-navigation";
-import BookingModal from "@/components/booking-modal";
+import { Header, BottomNavigation } from "@/components/layout";
+import { PointsBalanceCard, RecentRides } from "@/features/user";
+import { ServicesGrid } from "@/features/services";
+import { PromotionCard } from "@/features/shared";
+import { BookingModal } from "@/features/bookings";
 
 export default function Home() {
   const [selectedService, setSelectedService] = useState<string | null>(null);

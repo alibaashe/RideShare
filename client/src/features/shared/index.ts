@@ -1,0 +1,1 @@
+export { default as PromotionCard } from './components/promotion-card';

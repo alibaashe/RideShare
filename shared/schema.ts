@@ -50,9 +50,26 @@ export const rides = pgTable("rides", {
   date: timestamp("date").defaultNow(),
 });
 
+// Somalia phone number validation
+const somaliaPhoneRegex = /^(?:\+252|252|0)?[1-9][0-9]{7,8}$/;
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
+}).extend({
+  phoneNumber: z.string()
+    .regex(somaliaPhoneRegex, "Please enter a valid Somalia phone number (e.g., +252612345678)")
+    .transform((val) => {
+      // Normalize to +252 format
+      if (val.startsWith('0')) {
+        return '+252' + val.substring(1);
+      } else if (val.startsWith('252')) {
+        return '+' + val;
+      } else if (!val.startsWith('+252')) {
+        return '+252' + val;
+      }
+      return val;
+    }),
 });
 
 export const insertServiceSchema = createInsertSchema(services).omit({

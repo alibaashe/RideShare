@@ -7,12 +7,14 @@ import Home from "@/pages/home";
 import History from "@/pages/history";
 import Help from "@/pages/help";
 import Profile from "@/pages/profile";
+import Login from "@/pages/login";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/login" component={Login} />
       <Route path="/history" component={History} />
       <Route path="/help" component={Help} />
       <Route path="/profile" component={Profile} />

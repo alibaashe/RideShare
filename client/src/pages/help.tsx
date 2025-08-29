@@ -1,5 +1,4 @@
-import Header from "@/components/header";
-import BottomNavigation from "@/components/bottom-navigation";
+import { Header, BottomNavigation } from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";

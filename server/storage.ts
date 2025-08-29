@@ -9,6 +9,7 @@ export interface IStorage {
   // Users
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserPoints(userId: string, points: string): Promise<User | undefined>;
 
@@ -45,6 +46,16 @@ export class DatabaseStorage implements IStorage {
       return result[0];
     } catch (error) {
       console.error('Error getting user by username:', error);
+      throw new Error('Failed to get user');
+    }
+  }
+
+  async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
+    try {
+      const result = await db.select().from(users).where(eq(users.phoneNumber, phoneNumber)).limit(1);
+      return result[0];
+    } catch (error) {
+      console.error('Error getting user by phone number:', error);
       throw new Error('Failed to get user');
     }
   }
@@ -319,6 +330,10 @@ export class MemStorage implements IStorage {
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(user => user.username === username);
+  }
+
+  async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.phoneNumber === phoneNumber);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
