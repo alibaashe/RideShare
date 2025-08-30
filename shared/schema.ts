@@ -20,6 +20,7 @@ export const services = pgTable("services", {
   type: text("type").notNull(), // 'transportation', 'delivery', 'food', 'gas', 'service'
   icon: text("icon").notNull(),
   basePrice: decimal("base_price", { precision: 10, scale: 2 }).notNull(),
+  scheduledDiscount: decimal("scheduled_discount", { precision: 10, scale: 2 }),
   description: text("description"),
   isActive: boolean("is_active").default(true),
 });
@@ -76,7 +77,10 @@ export const insertServiceSchema = createInsertSchema(services).omit({
   id: true,
 });
 
-export const insertBookingSchema = createInsertSchema(bookings).omit({
+export const insertBookingSchema = createInsertSchema(bookings, {
+  // Allow scheduledTime to be sent as an ISO 8601 string
+  scheduledTime: z.string().datetime().transform((str) => new Date(str)),
+}).omit({
   id: true,
   createdAt: true,
   updatedAt: true,

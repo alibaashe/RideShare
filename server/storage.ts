@@ -236,6 +236,7 @@ export class MemStorage implements IStorage {
         basePrice: "15.00",
         description: "Traditional taxi service",
         isActive: true,
+        scheduledDiscount: "3.00",
       },
       {
         id: "service-bus",
@@ -254,6 +255,7 @@ export class MemStorage implements IStorage {
         basePrice: "25.00",
         description: "Premium business rides",
         isActive: true,
+        scheduledDiscount: "5.00",
       },
       {
         id: "service-delivery",
@@ -289,6 +291,15 @@ export class MemStorage implements IStorage {
         icon: "utensils",
         basePrice: "5.00",
         description: "Food delivery service",
+        isActive: true,
+      },
+      {
+        id: "service-cars",
+        name: "Service Cars",
+        type: "service",
+        icon: "car",
+        basePrice: "50.00",
+        description: "Professional car maintenance",
         isActive: true,
       },
     ];

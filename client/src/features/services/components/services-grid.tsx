@@ -79,25 +79,6 @@ export default function ServicesGrid({ onServiceSelect }: ServicesGridProps) {
         ))}
       </div>
 
-      {/* Service Cars - Full width */}
-      <Card
-        className="service-card bg-card rounded-2xl p-6 shadow-sm cursor-pointer hover:shadow-md transition-shadow mb-6"
-        onClick={() => onServiceSelect("service-cars")}
-        data-testid="service-card-service-cars"
-      >
-        <div className="flex items-center space-x-4">
-          <img
-            src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200"
-            alt="Car service center"
-            className="w-16 h-16 rounded-full object-cover"
-            data-testid="service-image-service-cars"
-          />
-          <div>
-            <h3 className="font-semibold text-foreground" data-testid="service-name-service-cars">Service Cars</h3>
-            <p className="text-sm text-muted-foreground">Professional car maintenance</p>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 }

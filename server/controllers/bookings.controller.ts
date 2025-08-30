@@ -9,7 +9,7 @@ export function setupBookingsRoutes(app: Express) {
   // Create booking
   app.post("/api/bookings", 
     optionalAuth,
-    validateBody(insertBookingSchema),
+    validateBody(insertBookingSchema.omit({ userId: true })),
     async (req, res) => {
       try {
         const user = getCurrentUser(req);

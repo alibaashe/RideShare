@@ -83,7 +83,8 @@ export default function BookingModal({ serviceId, onClose }: BookingModalProps) 
     }
 
     const basePrice = parseFloat(selectedService.basePrice);
-    const discount = isScheduled ? 3.00 : 0;
+  // Note: This discount logic is duplicated. A refactor could be to calculate discount and finalPrice once.
+    const discount = isScheduled ? parseFloat(selectedService.scheduledDiscount || "0.00") : 0;
     const totalAmount = (basePrice - discount).toFixed(2);
 
     const bookingData = {
@@ -105,7 +106,7 @@ export default function BookingModal({ serviceId, onClose }: BookingModalProps) 
   }
 
   const basePrice = parseFloat(selectedService.basePrice);
-  const discount = isScheduled ? 3.00 : 0;
+  const discount = isScheduled ? parseFloat(selectedService.scheduledDiscount || "0.00") : 0;
   const finalPrice = basePrice - discount;
 
   const getServiceIcon = () => {
@@ -234,7 +235,7 @@ export default function BookingModal({ serviceId, onClose }: BookingModalProps) 
                       </div>
                     </div>
                     <span className="text-muted-foreground font-semibold" data-testid="price-schedule">
-                      ${(basePrice - 3).toFixed(2)}
+                      ${finalPrice.toFixed(2)}
                     </span>
                   </div>
                 </CardContent>
@@ -243,6 +244,7 @@ export default function BookingModal({ serviceId, onClose }: BookingModalProps) 
           </div>
 
           {/* Payment Method */}
+          {/* TODO: This section contains hardcoded points logic. Refactor to use a dynamic points system. */}
           <div>
             <h3 className="text-sm font-medium text-foreground mb-3">Payment Method</h3>
             <Card>
